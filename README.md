@@ -1,4 +1,4 @@
-# Cloud DevOps Platform 🚀
+# Cloud DevOps Platform 
 
 A production-style **Cloud / DevOps starter project** demonstrating how to containerize a backend application and expose it securely using **Docker, Docker Compose, and Nginx reverse proxy**.
 
@@ -6,7 +6,7 @@ This project is built step by step with DevOps best practices and is designed to
 
 ---
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 Client (Browser / curl)
 |
@@ -26,7 +26,7 @@ Copy code
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend:** Python (Flask)
 - **Containerization:** Docker
@@ -37,7 +37,7 @@ Copy code
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 cloud-devops-platform/
 ├── app/
@@ -56,7 +56,7 @@ Copy code
 
 ---
 
-## ⚙️ Application Features
+## Application Features
 
 - `/` → Home endpoint
 - `/health` → Health check endpoint (used in DevOps monitoring & load balancers)
@@ -66,7 +66,7 @@ Copy code
 
 ---
 
-## ▶️ Run Locally (Docker + Nginx)
+## Run Locally (Docker + Nginx)
 
 ### Prerequisites
 Make sure you have installed:
@@ -95,7 +95,8 @@ bash
 Copy code
 Ctrl + C
 docker-compose down
-🧪 Verify Using curl
+
+Verify Using curl
 bash
 Copy code
 curl http://localhost:8081/
