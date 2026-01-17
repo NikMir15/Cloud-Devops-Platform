@@ -1,4 +1,4 @@
-name: CD - Deploy to EC2
+name: CI/CD Deploy to EC2
 
 on:
   push:
@@ -7,39 +7,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build & push image to GHCR
-        run: |
-          IMAGE="ghcr.io/nikmir15/cloud-devops-platform:latest"
-          docker build -t "$IMAGE" ./app
-          docker push "$IMAGE"
-
-      - name: Deploy on EC2 via SSH
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            cd ~
-            if [ ! -d cloud-devops-platform ]; then
-              git clone https://github.com/NikMir15/Cloud-Devops-Platform.git cloud-devops-platform
+            set -e
+            APP_DIR=/home/ubuntu/apps/Cloud-Devops-Platform
+
+            if [ ! -d "$APP_DIR/.git" ]; then
+              mkdir -p /home/ubuntu/apps
+              cd /home/ubuntu/apps
+              git clone https://github.com/NikMir15/Cloud-Devops-Platform.git
             fi
-            cd cloud-devops-platform
-            git pull origin main
-            chmod +x scripts/ec2_deploy.sh
-            ./scripts/ec2_deploy.sh
+
+            cd $APP_DIR
+            git fetch --all
+            git reset --hard origin/main
+
+            docker compose down || true
+            docker compose up -d --build
+
+            echo " Deployment successful"
+            docker ps
