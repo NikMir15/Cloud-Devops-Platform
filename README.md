@@ -103,7 +103,7 @@ curl http://localhost:8081/
 curl http://localhost:8081/health
 Expected output:
 
-Home page text: Cloud DevOps Platform is running ✅
+Home page text: Cloud DevOps Platform is running 
 
 Health endpoint JSON: { "status": "ok" }
 
