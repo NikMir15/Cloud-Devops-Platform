@@ -1,9 +1,10 @@
-name: CI - Build & Smoke Test
+name: ci
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
 
 jobs:
   smoke-test:
@@ -13,11 +14,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Docker versions
-        run: |
-          docker --version
-          docker compose version
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Smoke test (Docker Compose + curl)
+      - name: Build and start services (docker-compose.prod.yml)
         run: |
-          bash scripts/smoke_test.sh
+          docker compose -f docker-compose.prod.yml up -d --build
+          docker compose -f docker-compose.prod.yml ps
+
+      - name: Smoke test (curl localhost:80)
+        run: |
+          chmod +x scripts/smoke_test.sh
+          ./scripts/smoke_test.sh
+
+      - name: Logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml logs --no-color --tail=200
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f docker-compose.prod.yml down --remove-orphans
